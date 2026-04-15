@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <title>Visualizzatore Chat Offline | ClaudeArchive Explorer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
     <style>
-        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        pre code { border-radius: 5px; }
         .chat-container { max-width: 900px; margin: auto; }
-        .view-section { display: none; }
+        .view-section { display: none; background: white; border-radius: 8px; }
         .active-section { display: block; }
         #renderedContent img { max-width: 100%; }
         hr { margin: 2rem 0; opacity: 0.15; }
         .export-meta-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #0d6efd; }
+        #sourceContent pre { white-space: pre-wrap; background: #f8f9fa; color: #333; padding: 20px; }
     </style>
 </head>
 <body class="bg-light">
@@ -32,17 +34,30 @@
             <p class="mb-0"><a href="{{ filename }}" class="btn btn-sm btn-info mt-2" download>Scarica file MD originale</a></p>
         </div>
 
-        <div id="renderedContent" class="view-section active-section card p-5 shadow-sm mb-5">
-            {{ content|safe }}
-        </div>
+        <div id="renderedContent" class="view-section active-section card p-5 shadow-sm mb-5"></div>
 
         <div id="sourceContent" class="view-section card p-5 shadow-sm mb-5">
             <h4 class="text-muted mb-4">Sorgente Markdown ({{ filename }})</h4>
-            <pre><code>{{ raw }}</code></pre>
+            <pre><code id="raw-markdown">{{ raw }}</code></pre>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
     <script>
+        marked.setOptions({
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            },
+            langPrefix: 'hljs language-'
+        });
+
+        const rawText = document.getElementById('raw-markdown').textContent;
+        document.getElementById('renderedContent').innerHTML = marked.parse(rawText);
+        hljs.highlightAll();
+
         function showSection(type) {
             const rendered = document.getElementById('renderedContent');
             const source = document.getElementById('sourceContent');

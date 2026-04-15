@@ -22,7 +22,7 @@ Questo progetto permette di esportare le conversazioni di Claude (da file JSON) 
 1. Assicurati di avere Python installato.
 2. Installa le dipendenze necessarie:
    ```bash
-   pip install flask markdown
+   pip install flask
    ```
 
 ## Utilizzo
@@ -42,7 +42,7 @@ Questo progetto permette di esportare le conversazioni di Claude (da file JSON) 
 
 - Python 3.x
 - Flask
-- Markdown (libreria Python)
+- Marked.js & Highlight.js (via CDN)
 - Bootstrap 5 (via CDN)
 
 ---

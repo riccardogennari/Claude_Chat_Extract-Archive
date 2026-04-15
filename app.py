@@ -1,6 +1,5 @@
 from flask import Flask, render_template, abort, request, jsonify, send_from_directory
 import json
-import markdown
 import re
 from pathlib import Path
 from datetime import datetime
@@ -31,13 +30,9 @@ def view_chat(filename):
         
     with open(chat_path, 'r', encoding='utf-8') as f:
         md_text = f.read()
-    
-    # Conversione Markdown in HTML con estensioni per tabelle e blocchi di codice
-    html_content = markdown.markdown(
-        md_text, 
-        extensions=['fenced_code', 'codehilite', 'tables']
-    )
-    return render_template('viewer.html', content=html_content, raw=md_text, filename=filename)
+
+    # Non convertiamo più in HTML sul server, passiamo solo il testo raw
+    return render_template('viewer.html', raw=md_text, filename=filename)
 
 @app.route('/export_offline', methods=['POST'])
 def export_offline():
@@ -97,11 +92,10 @@ def export_offline():
         # Genera il viewer HTML per la chat
         with open(original_chat_path, 'r', encoding='utf-8') as f:
             md_text = f.read()
-        html_content = markdown.markdown(md_text, extensions=['fenced_code', 'codehilite', 'tables'])
         
         offline_viewer_html_path = export_dir / f"viewer_{filename.replace('.md', '.html')}"
         with open(offline_viewer_html_path, 'w', encoding='utf-8') as f_viewer:
-            f_viewer.write(render_template('offline_viewer.html', content=html_content, raw=md_text, filename=filename, export_metadata=export_metadata))
+            f_viewer.write(render_template('offline_viewer.html', raw=md_text, filename=filename, export_metadata=export_metadata))
 
     # Genera l'indice HTML per l'esportazione
     offline_index_html_path = export_dir / "index.html"
