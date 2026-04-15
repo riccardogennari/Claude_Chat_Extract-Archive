@@ -1,39 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
+    <meta charset="UTF-8">
     <title>ClaudeArchive Explorer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        .search-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    </style>
 </head>
-<body class="container mt-5">
-    <h1>ClaudeArchive Explorer</h1>
-    <input type="text" id="filterInput" class="form-control my-4" placeholder="Filtra per titolo o data...">
+<body class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>ClaudeArchive Explorer</h1>
+        <span class="badge bg-secondary">{{ chats|length }} conversazioni</span>
+    </div>
+
+    <div class="search-container mb-4 d-flex justify-content-between align-items-center">
+        <input type="text" id="filterInput" class="form-control form-control-lg me-3" placeholder="Filtra per titolo o data (es. 2023-10)...">
+        <button class="btn btn-success btn-lg" id="exportSelectedBtn" disabled data-bs-toggle="modal" data-bs-target="#exportModal">
+            Esporta Selezionate
+        </button>
+    </div>
     
-    <table class="table table-hover">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white rounded shadow-sm">
         <thead>
             <tr>
+                <th style="width: 50px;"><input type="checkbox" id="selectAll"></th>
                 <th>Data</th>
-                <th>Titolo</th>
-                <th>Link</th>
+                <th>Titolo Conversazione</th>
+                <th style="width: 100px;">Azione</th>
             </tr>
         </thead>
         <tbody id="chatTable">
             {% for chat in chats %}
             <tr>
-                <td>{{ chat.date }}</td>
-                <td>{{ chat.title }}</td>
-                <td><a href="/chat/{{ chat.filename }}" class="btn btn-sm btn-primary">Apri</a></td>
+                <td><input type="checkbox" class="chat-checkbox" value="{{ chat.filename }}"></td>
+                <td class="text-muted font-monospace">{{ chat.date }}</td>
+                <td><strong>{{ chat.title }}</strong></td>
+                <td>
+                    <a href="/chat/{{ chat.filename }}" class="btn btn-outline-primary btn-sm">Apri</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Esporta Chat Selezionate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="exportForm">
+                        <div class="mb-3">
+                            <label for="exportTitle" class="form-label">Titolo Esportazione (opzionale)</label>
+                            <input type="text" class="form-control" id="exportTitle" placeholder="Es. Le mie chat preferite">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exportFilename" class="form-label">Nome Cartella/File (opzionale)</label>
+                            <input type="text" class="form-control" id="exportFilename" placeholder="es. mie_chat_offline">
+                            <div class="form-text">Verrà usato per la cartella di destinazione e il nome del file indice.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exportDescription" class="form-label">Descrizione (opzionale)</label>
+                            <textarea class="form-control" id="exportDescription" rows="3" placeholder="Una breve descrizione di questa esportazione..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary" id="confirmExportBtn">Conferma Esportazione</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        const chatCheckboxes = document.querySelectorAll('.chat-checkbox');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const exportSelectedBtn = document.getElementById('exportSelectedBtn');
+        const confirmExportBtn = document.getElementById('confirmExportBtn');
+
+        function updateExportButtonState() {
+            const anyChecked = Array.from(chatCheckboxes).some(cb => cb.checked);
+            exportSelectedBtn.disabled = !anyChecked;
+        }
+
+        selectAllCheckbox.addEventListener('change', function() {
+            chatCheckboxes.forEach(cb => cb.checked = this.checked);
+            updateExportButtonState();
+        });
+
+        chatCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateExportButtonState);
+        });
+
         document.getElementById('filterInput').addEventListener('keyup', function() {
             let val = this.value.toLowerCase();
             document.querySelectorAll('#chatTable tr').forEach(row => {
                 row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
             });
         });
+
+        confirmExportBtn.addEventListener('click', async function() {
+            const selectedFilenames = Array.from(chatCheckboxes)
+                                        .filter(cb => cb.checked)
+                                        .map(cb => cb.value);
+            
+            const exportTitle = document.getElementById('exportTitle').value;
+            const exportFilename = document.getElementById('exportFilename').value;
+            const exportDescription = document.getElementById('exportDescription').value;
+
+            if (selectedFilenames.length === 0) {
+                alert('Seleziona almeno una chat da esportare.');
+                return;
+            }
+
+            // Disabilita il pulsante per evitare doppi click
+            confirmExportBtn.disabled = true;
+            confirmExportBtn.textContent = 'Esportazione in corso...';
+
+            try {
+                const response = await fetch('/export_offline', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filenames: selectedFilenames,
+                        title: exportTitle,
+                        filename: exportFilename,
+                        description: exportDescription
+                    })
+                });
+                const result = await response.json();
+                alert(result.message);
+                if (result.success && result.download_link) {
+                    window.open(result.download_link, '_blank');
+                }
+            } catch (error) {
+                console.error('Errore durante l\'esportazione:', error);
+                alert('Si è verificato un errore durante l\'esportazione.');
+            } finally {
+                // Riabilita il pulsante e chiudi il modal
+                confirmExportBtn.disabled = false;
+                confirmExportBtn.textContent = 'Conferma Esportazione';
+                const exportModal = bootstrap.Modal.getInstance(document.getElementById('exportModal'));
+                exportModal.hide();
+            }
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
