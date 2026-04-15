@@ -1,0 +1,56 @@
+[
+    {
+        "id": "01a1e420-86f4-4a1d-b587-6a1c43c3f6dd",
+        "title": "Correzione di un errore",
+        "date": "2026-04-09",
+        "filename": "correzione-di-un-errore-01a1e420.md"
+    },
+    {
+        "id": "41bac6a6-5000-4520-98ca-9aa7ec430949",
+        "title": "Descrizione di ciò che vedi",
+        "date": "2026-04-10",
+        "filename": "descrizione-di-ciò-che-vedi-41bac6a6.md"
+    },
+    {
+        "id": "dda6757d-f82a-4c3e-ac69-1327cb68af99",
+        "title": "Conversione in tabella markdown",
+        "date": "2026-04-13",
+        "filename": "conversione-in-tabella-markdown-dda6757d.md"
+    },
+    {
+        "id": "87bc52aa-3203-4f6f-8c9a-67410dab7040",
+        "title": "Proposta architetturale con Java 17 e Resilience4j",
+        "date": "2026-04-13",
+        "filename": "proposta-architetturale-con-java-17-e-resilience4j-87bc52aa.md"
+    },
+    {
+        "id": "e9373529-eff9-4b3b-9d6b-689367ca3be1",
+        "title": "Rappresentazione drawio architettura bollettini",
+        "date": "2026-04-13",
+        "filename": "rappresentazione-drawio-architettura-bollettini-e9373529.md"
+    },
+    {
+        "id": "6724bc61-e865-4457-af02-37efe95dfe18",
+        "title": "Rappresentazione drawio architettura bollettini",
+        "date": "2026-04-13",
+        "filename": "rappresentazione-drawio-architettura-bollettini-6724bc61.md"
+    },
+    {
+        "id": "9406b3c6-36c5-4772-a875-9dcb341b5986",
+        "title": "Chat senza titolo",
+        "date": "2026-04-13",
+        "filename": "chat-senza-titolo-9406b3c6.md"
+    },
+    {
+        "id": "3bd9a173-eb4c-4a9c-9aba-e6c2c333a763",
+        "title": "Rappresentazione drawio architettura bollettini",
+        "date": "2026-04-13",
+        "filename": "rappresentazione-drawio-architettura-bollettini-3bd9a173.md"
+    },
+    {
+        "id": "6c0e1e60-ea1d-4f28-941a-76bf0c65ad4c",
+        "title": "Migliorare la risposta sul sistema di pagamento bollettini",
+        "date": "2026-04-14",
+        "filename": "migliorare-la-risposta-sul-sistema-di-pagamento-bo-6c0e1e60.md"
+    }
+]

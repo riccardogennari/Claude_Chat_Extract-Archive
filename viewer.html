@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizzatore Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        pre { background: #272822; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .chat-container { max-width: 900px; margin: auto; }
+        .view-section { display: none; }
+        .active-section { display: block; }
+        #renderedContent img { max-width: 100%; }
+        hr { margin: 2rem 0; opacity: 0.15; }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">← Torna alla lista</a>
+            <div class="btn-group">
+                <button onclick="showSection('rendered')" id="btn-rendered" class="btn btn-primary">Anteprima HTML</button>
+                <button onclick="showSection('source')" id="btn-source" class="btn btn-outline-light">Sorgente Markdown</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container chat-container">
+        <div id="renderedContent" class="view-section active-section card p-5 shadow-sm mb-5">
+            {{ content|safe }}
+        </div>
+
+        <div id="sourceContent" class="view-section card p-5 shadow-sm mb-5">
+            <h4 class="text-muted mb-4">Sorgente Markdown ({{ filename }})</h4>
+            <pre><code>{{ raw }}</code></pre>
+        </div>
+    </div>
+
+    <script>
+        function showSection(type) {
+            const rendered = document.getElementById('renderedContent');
+            const source = document.getElementById('sourceContent');
+            const btnR = document.getElementById('btn-rendered');
+            const btnS = document.getElementById('btn-source');
+
+            if (type === 'rendered') {
+                rendered.classList.add('active-section');
+                source.classList.remove('active-section');
+                btnR.className = "btn btn-primary";
+                btnS.className = "btn btn-outline-light";
+            } else {
+                rendered.classList.remove('active-section');
+                source.classList.add('active-section');
+                btnR.className = "btn btn-outline-light";
+                btnS.className = "btn btn-primary";
+            }
+        }
+    </script>
+</body>
+</html>
