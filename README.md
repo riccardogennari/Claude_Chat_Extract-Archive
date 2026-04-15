@@ -1,4 +1,4 @@
-# Claude Chat Extractor & Viewer
+# ClaudeArchive Explorer
 
 Questo progetto permette di esportare le conversazioni di Claude (da file JSON) in singoli file Markdown e di visualizzarle attraverso un'interfaccia web locale elegante e funzionale.
 
